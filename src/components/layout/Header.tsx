@@ -60,7 +60,7 @@ const Header = () => {
           onClick={toggleMenu}
           aria-label="Toggle menu"
         >
-          {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+          {isMenuOpen ? <X className='text-white' size={28} /> : <Menu className='text-white' size={28} />}
         </button>
       </div>
       
