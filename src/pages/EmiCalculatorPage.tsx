@@ -1,55 +1,54 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { DollarSign, Calendar, Percent } from 'lucide-react';
+import { Calendar, Percent } from 'lucide-react';
 
 const EmiCalculatorPage = () => {
   const [loanAmount, setLoanAmount] = useState(100000);
   const [interestRate, setInterestRate] = useState(8.5);
   const [loanTerm, setLoanTerm] = useState(60); // in months
-  
+
   const [emi, setEmi] = useState(0);
   const [totalInterest, setTotalInterest] = useState(0);
   const [totalPayment, setTotalPayment] = useState(0);
-  const [chartData, setChartData] = useState<Array<{name: string, value: number}>>([]);
-  
-  // Calculate EMI
+  const [chartData, setChartData] = useState<Array<{ name: string, value: number }>>([]);
+
+  // Calculate EMI using simple interest formula
   useEffect(() => {
     const p = loanAmount;
-    const r = interestRate / 12 / 100;
-    const n = loanTerm;
-    
-    // EMI formula: P * r * (1 + r)^n / ((1 + r)^n - 1)
-    const emiValue = p * r * Math.pow(1 + r, n) / (Math.pow(1 + r, n) - 1);
-    const totalPaymentValue = emiValue * n;
-    const totalInterestValue = totalPaymentValue - p;
-    
+    const r = interestRate; // Annual interest rate
+    const t = loanTerm; // Convert months to years for simple interest
+
+    // Simple interest formula: Total Interest = P * R * T / 100
+    const totalInterestValue = (p * r * t) / 100;
+    const totalPaymentValue = p + totalInterestValue;
+    const emiValue = totalPaymentValue / loanTerm; // Monthly EMI
+
     setEmi(isNaN(emiValue) ? 0 : emiValue);
     setTotalInterest(isNaN(totalInterestValue) ? 0 : totalInterestValue);
     setTotalPayment(isNaN(totalPaymentValue) ? 0 : totalPaymentValue);
-    
+
     setChartData([
       { name: 'Principal', value: p },
       { name: 'Interest', value: isNaN(totalInterestValue) ? 0 : totalInterestValue }
     ]);
   }, [loanAmount, interestRate, loanTerm]);
-  
-  // Format currency
+
+  // Format currency in INR with full decimal precision
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
+      currency: 'INR',
+      minimumFractionDigits: 2, // Ensure at least two decimal places
     }).format(value);
   };
-  
+
   return (
     <div className="min-h-screen pt-24 pb-16 bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="container-custom mx-auto">
         {/* Header Section */}
         <div className="text-center mb-12">
-          <motion.h1 
+          <motion.h1
             className="text-4xl md:text-5xl font-bold mb-4 gradient-text"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -57,7 +56,7 @@ const EmiCalculatorPage = () => {
           >
             EMI Calculator
           </motion.h1>
-          <motion.p 
+          <motion.p
             className="text-xl text-gray-600 max-w-3xl mx-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -66,10 +65,10 @@ const EmiCalculatorPage = () => {
             Plan your loan with our interactive EMI calculator. Adjust the parameters to see how they affect your monthly payments.
           </motion.p>
         </div>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Calculator Inputs */}
-          <motion.div 
+          <motion.div
             className="lg:col-span-1 order-2 lg:order-1"
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -77,7 +76,7 @@ const EmiCalculatorPage = () => {
           >
             <div className="card p-8">
               <h2 className="text-2xl font-bold mb-8">Loan Parameters</h2>
-              
+
               <div className="space-y-8">
                 <div>
                   <div className="flex justify-between mb-2">
@@ -85,7 +84,7 @@ const EmiCalculatorPage = () => {
                       Loan Amount
                     </label>
                     <div className="flex items-center bg-gray-100 px-3 py-1 rounded-lg">
-                      <DollarSign size={16} className="text-gray-500" />
+                      <span className="text-gray-500 mr-1">₹</span>
                       <input
                         type="number"
                         value={loanAmount}
@@ -98,18 +97,18 @@ const EmiCalculatorPage = () => {
                     type="range"
                     id="loanAmount"
                     min="10000"
-                    max="1000000"
+                    max="10000000"
                     step="10000"
                     value={loanAmount}
                     onChange={(e) => setLoanAmount(Number(e.target.value))}
                     className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                   />
                   <div className="flex justify-between text-gray-500 mt-1 text-sm">
-                    <span>$10,000</span>
-                    <span>$1,000,000</span>
+                    <span>₹10,000</span>
+                    <span>₹1,00,00,000</span>
                   </div>
                 </div>
-                
+
                 <div>
                   <div className="flex justify-between mb-2">
                     <label htmlFor="interestRate" className="block text-lg font-medium text-gray-700">
@@ -141,18 +140,20 @@ const EmiCalculatorPage = () => {
                     <span>20%</span>
                   </div>
                 </div>
-                
+
                 <div>
                   <div className="flex justify-between mb-2">
                     <label htmlFor="loanTerm" className="block text-lg font-medium text-gray-700">
-                      Loan Term
+                      Loan Term (Months)
                     </label>
                     <div className="flex items-center bg-gray-100 px-3 py-1 rounded-lg">
                       <input
                         type="number"
-                        value={loanTerm / 12}
-                        onChange={(e) => setLoanTerm(Number(e.target.value) * 12)}
+                        value={loanTerm}
+                        onChange={(e) => setLoanTerm(Number(e.target.value))}
                         className="w-16 bg-transparent focus:outline-none text-right"
+                        min="1"
+                        max="360"
                       />
                       <Calendar size={16} className="text-gray-500 ml-1" />
                     </div>
@@ -160,21 +161,21 @@ const EmiCalculatorPage = () => {
                   <input
                     type="range"
                     id="loanTerm"
-                    min="12"
+                    min="1"
                     max="360"
-                    step="12"
+                    step="1"
                     value={loanTerm}
                     onChange={(e) => setLoanTerm(Number(e.target.value))}
                     className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                   />
                   <div className="flex justify-between text-gray-500 mt-1 text-sm">
-                    <span>1 Year</span>
-                    <span>30 Years</span>
+                    <span>1 Month</span>
+                    <span>360 Months</span>
                   </div>
                 </div>
               </div>
             </div>
-            
+
             <div className="mt-8 card p-6">
               <h3 className="text-xl font-semibold mb-4">Need Assistance?</h3>
               <p className="text-gray-600 mb-4">
@@ -183,9 +184,9 @@ const EmiCalculatorPage = () => {
               <button className="btn btn-primary w-full">Schedule a Consultation</button>
             </div>
           </motion.div>
-          
+
           {/* Results */}
-          <motion.div 
+          <motion.div
             className="lg:col-span-2 order-1 lg:order-2"
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
@@ -197,26 +198,26 @@ const EmiCalculatorPage = () => {
               <div className="text-5xl md:text-6xl font-bold mb-4">{formatCurrency(emi)}</div>
               <p className="text-primary-200">Based on your loan parameters</p>
             </div>
-            
+
             {/* Detailed Breakdown */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
               <div className="card p-6">
                 <h3 className="text-xl font-semibold mb-4">Total Principal</h3>
                 <div className="text-3xl font-bold text-gray-800">{formatCurrency(loanAmount)}</div>
               </div>
-              
+
               <div className="card p-6">
                 <h3 className="text-xl font-semibold mb-4">Total Interest</h3>
                 <div className="text-3xl font-bold text-gray-800">{formatCurrency(totalInterest)}</div>
               </div>
-              
+
               <div className="card p-6 md:col-span-2">
                 <h3 className="text-xl font-semibold mb-4">Total Amount Payable</h3>
                 <div className="text-3xl font-bold text-gray-800">{formatCurrency(totalPayment)}</div>
                 <p className="text-gray-600 mt-2">Principal + Interest</p>
               </div>
             </div>
-            
+
             {/* Chart */}
             <div className="card p-6 mt-6">
               <h3 className="text-xl font-semibold mb-6">Principal vs. Interest</h3>
@@ -225,12 +226,12 @@ const EmiCalculatorPage = () => {
                   <BarChart data={chartData} layout="vertical">
                     <XAxis type="number" tickFormatter={(value) => formatCurrency(value)} />
                     <YAxis type="category" dataKey="name" />
-                    <Tooltip 
+                    <Tooltip
                       formatter={(value: number) => formatCurrency(value)}
                       labelFormatter={(label) => `${label}`}
                     />
                     <Bar dataKey="value" radius={[0, 6, 6, 0]}>
-                      {chartData.map((entry, index) => (
+                      {chartData.map((_, index) => (
                         <Cell key={`cell-${index}`} fill={index === 0 ? '#2563eb' : '#7c3aed'} />
                       ))}
                     </Bar>
@@ -248,7 +249,7 @@ const EmiCalculatorPage = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Call to Action */}
             <div className="card p-8 mt-6 bg-gradient-to-br from-accent-500 to-accent-600 text-white">
               <h3 className="text-2xl font-bold mb-4">Ready to apply for your loan?</h3>

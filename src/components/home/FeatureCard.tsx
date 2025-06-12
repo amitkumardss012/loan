@@ -5,6 +5,7 @@ interface FeatureCardProps {
   icon: ReactNode;
   title: string;
   description: string;
+  children?: React.ReactNode;
 }
 
 const FeatureCard = ({ icon, title, description }: FeatureCardProps) => {
