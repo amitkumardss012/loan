@@ -1,38 +1,56 @@
-import { useState } from 'react';
+import { Resolver, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
+import { axiosInstance } from '../api/apiClient';
+import { LoanApplicationValidator, LoanApplicationType } from '../validator/loan';
+import { useState } from 'react';
+import {  toast } from 'sonner'; // Import Sonner
 
 const ApplyPage = () => {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    phone: '',
-    email: '',
-    loanAmount: 5000,
-    duration: '6 months',
-  });
-  
   const [isSubmitted, setIsSubmitted] = useState(false);
-  
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { register, handleSubmit, formState: { errors }, reset, watch } = useForm<LoanApplicationType>({
+    resolver: zodResolver(LoanApplicationValidator) as Resolver<LoanApplicationType>,
+    defaultValues: {
+      name: '',
+      phone: '',
+      email: '',
+      amount: 5000,
+      duration: 6,
+      address: '',
+      loanType: '',
+      aadharNumber: '',
+      isSeen: false,
+    },
+  });
+
+  const formData = watch(); // Watch form values for the summary card
+
+  const onSubmit = async (data: LoanApplicationType) => {
+    setIsLoading(true);
+
+    try {
+      await axiosInstance.post('/loan/create', data);
+      setIsSubmitted(true);
+      toast.success('Loan application submitted successfully!', {
+        description: `A confirmation email will be sent to ${data.email}.`,
+      });
+      reset();
+    } catch (err: any) {
+      const errorMessage = err.response?.data?.message || 'Failed to submit loan application';
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
   };
-  
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Here you would typically send the data to your server
-    // For demo purposes, we'll just set isSubmitted to true
-    setIsSubmitted(true);
-  };
-  
+
   // Format loan amount with commas
   const formatCurrency = (value: number) => {
     return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
-  
+
   return (
     <div className="min-h-screen pt-24 pb-16 bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="container-custom mx-auto">
@@ -65,22 +83,19 @@ const ApplyPage = () => {
             transition={{ delay: 0.4, duration: 0.5 }}
           >
             {!isSubmitted ? (
-              <form onSubmit={handleSubmit} className="card p-8 md:p-12">
+              <form onSubmit={handleSubmit(onSubmit)} className="card p-8 md:p-12">
                 <div className="space-y-10">
                   <div>
-                    <label htmlFor="fullName" className="block text-lg font-medium text-gray-700 mb-2">
+                    <label htmlFor="name" className="block text-lg font-medium text-gray-700 mb-2">
                       Full Name
                     </label>
                     <input
-                      type="text"
-                      id="fullName"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleChange}
-                      required
-                      className="input-field w-full"
+                      id="name"
+                      {...register('name')}
+                      className={`input-field w-full ${errors.name ? 'border-red-500' : ''}`}
                       placeholder="John Doe"
                     />
+                    {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
                   </div>
                   
                   <div>
@@ -88,15 +103,12 @@ const ApplyPage = () => {
                       Phone Number
                     </label>
                     <input
-                      type="tel"
                       id="phone"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
-                      required
-                      className="input-field w-full"
-                      placeholder="+1 (555) 123-4567"
+                      {...register('phone')}
+                      className={`input-field w-full ${errors.phone ? 'border-red-500' : ''}`}
+                      placeholder="5551234567"
                     />
+                    {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>}
                   </div>
                   
                   <div>
@@ -104,63 +116,107 @@ const ApplyPage = () => {
                       Email Address
                     </label>
                     <input
-                      type="email"
                       id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      className="input-field w-full"
+                      {...register('email')}
+                      className={`input-field w-full ${errors.email ? 'border-red-500' : ''}`}
                       placeholder="johndoe@example.com"
                     />
+                    {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
                   </div>
                   
                   <div>
-                    <label htmlFor="loanAmount" className="block text-lg font-medium text-gray-700 mb-2">
-                      Loan Amount (${formatCurrency(formData.loanAmount)})
+                    <label htmlFor="address" className="block text-lg font-medium text-gray-700 mb-2">
+                      Address
+                    </label>
+                    <textarea
+                      id="address"
+                      {...register('address')}
+                      className={`input-field w-full ${errors.address ? 'border-red-500' : ''}`}
+                      placeholder="123 Main St, City, State, ZIP"
+                      rows={4}
+                    />
+                    {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address.message}</p>}
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="loanType" className="block text-lg font-medium text-gray-700 mb-2">
+                      Loan Type
+                    </label>
+                    <select
+                      id="loanType"
+                      {...register('loanType')}
+                      className={`input-field w-full ${errors.loanType ? 'border-red-500' : ''}`}
+                    >
+                      <option value="" disabled>Select Loan Type</option>
+                      <option value="Personal">Personal</option>
+                      <option value="Home">Home</option>
+                      <option value="Auto">Auto</option>
+                      <option value="Business">Business</option>
+                    </select>
+                    {errors.loanType && <p className="text-red-500 text-sm mt-1">{errors.loanType.message}</p>}
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="aadharNumber" className="block text-lg font-medium text-gray-700 mb-2">
+                      Aadhar Number
+                    </label>
+                    <input
+                      id="aadharNumber"
+                      {...register('aadharNumber')}
+                      className={`input-field w-full ${errors.aadharNumber ? 'border-red-500' : ''}`}
+                      placeholder="123456789012"
+                    />
+                    {errors.aadharNumber && <p className="text-red-500 text-sm mt-1">{errors.aadharNumber.message}</p>}
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="amount" className="block text-lg font-medium text-gray-700 mb-2">
+                      Loan Amount (${formatCurrency(formData.amount || 5000)})
                     </label>
                     <input
                       type="range"
-                      id="loanAmount"
-                      name="loanAmount"
+                      id="amount"
+                      {...register('amount', { valueAsNumber: true })}
                       min="1000"
                       max="50000"
                       step="500"
-                      value={formData.loanAmount}
-                      onChange={handleChange}
                       className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                     />
                     <div className="flex justify-between text-gray-500 mt-2">
                       <span>$1,000</span>
                       <span>$50,000</span>
                     </div>
+                    {errors.amount && <p className="text-red-500 text-sm mt-1">{errors.amount.message}</p>}
                   </div>
                   
                   <div>
                     <label htmlFor="duration" className="block text-lg font-medium text-gray-700 mb-2">
-                      Loan Duration
+                      Loan Duration (Months)
                     </label>
                     <select
                       id="duration"
-                      name="duration"
-                      value={formData.duration}
-                      onChange={handleChange}
-                      required
-                      className="input-field w-full"
+                      {...register('duration', { valueAsNumber: true })}
+                      className={`input-field w-full ${errors.duration ? 'border-red-500' : ''}`}
                     >
-                      <option value="1 month">1 month</option>
-                      <option value="3 months">3 months</option>
-                      <option value="6 months">6 months</option>
-                      <option value="1 year">1 year</option>
-                      <option value="2 years">2 years</option>
-                      <option value="5 years">5 years</option>
+                      <option value="" disabled>Select Duration</option>
+                      <option value={1}>1 month</option>
+                      <option value={3}>3 months</option>
+                      <option value={6}>6 months</option>
+                      <option value={12}>1 year</option>
+                      <option value={24}>2 years</option>
+                      <option value={60}>5 years</option>
                     </select>
+                    {errors.duration && <p className="text-red-500 text-sm mt-1">{errors.duration.message}</p>}
                   </div>
                 </div>
                 
                 <div className="mt-12">
-                  <button type="submit" className="btn btn-primary btn-large w-full">
-                    Submit Application
+                  <button 
+                    type="submit" 
+                    className="btn btn-primary btn-large w-full"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Submitting...' : 'Submit Application'}
                   </button>
                 </div>
               </form>
@@ -198,7 +254,10 @@ const ApplyPage = () => {
                   </li>
                 </ol>
                 <button 
-                  onClick={() => setIsSubmitted(false)} 
+                  onClick={() => {
+                    setIsSubmitted(false);
+                    reset();
+                  }} 
                   className="btn bg-gray-200 text-gray-800 hover:bg-gray-300"
                 >
                   Submit Another Application
@@ -220,12 +279,17 @@ const ApplyPage = () => {
               <div className="space-y-6">
                 <div>
                   <p className="text-primary-100 mb-1">Amount Requested</p>
-                  <p className="text-3xl font-bold">${formatCurrency(formData.loanAmount)}</p>
+                  <p className="text-3xl font-bold">${formatCurrency(formData.amount || 5000)}</p>
                 </div>
                 
                 <div>
                   <p className="text-primary-100 mb-1">Duration</p>
-                  <p className="text-xl font-medium">{formData.duration}</p>
+                  <p className="text-xl font-medium">{formData.duration || 6} months</p>
+                </div>
+
+                <div>
+                  <p className="text-primary-100 mb-1">Loan Type</p>
+                  <p className="text-xl font-medium">{formData.loanType || 'Not selected'}</p>
                 </div>
                 
                 <div>
@@ -237,7 +301,7 @@ const ApplyPage = () => {
                 <div className="border-t border-primary-400 pt-6">
                   <p className="text-primary-100 mb-1">Estimated Monthly Payment</p>
                   <p className="text-3xl font-bold">
-                    ${formData.duration === '1 month' ? formatCurrency(formData.loanAmount * 1.085) : formatCurrency(Math.round(formData.loanAmount / parseInt(formData.duration) * 1.085))}
+                    ${formatCurrency(Math.round((formData.amount || 5000) / (formData.duration || 6) * 1.085))}
                   </p>
                   <p className="text-sm text-primary-200 mt-1">Based on 8.5% APR</p>
                 </div>
