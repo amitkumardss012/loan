@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 // Admin components
 import AdminLayout from './components/admin/AdminLayout';
@@ -6,16 +6,16 @@ import ProtectedRoute from './components/admin/ProtectedRoute';
 import Dashboard from './pages/admin/Dashboard';
 import LoanApplications from './pages/admin/LoanApplications';
 import LoanDetails from './pages/admin/LoanDetails';
-import Users from './pages/admin/Users';
 import Login from './pages/admin/Login';
+import Users from './pages/admin/Users';
 
 // Public components
 import Layout from './components/layout/Layout';
-import HomePage from './pages/HomePage';
-import ApplyPage from './pages/ApplyPage';
-import EmiCalculatorPage from './pages/EmiCalculatorPage';
 import AboutPage from './pages/AboutPage';
+import ApplyPage from './pages/ApplyPage';
 import ContactPage from './pages/ContactPage';
+import EmiCalculatorPage from './pages/EmiCalculatorPage';
+import HomePage from './pages/HomePage';
 
 const App = () => {
   return (
