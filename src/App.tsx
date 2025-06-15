@@ -1,24 +1,26 @@
 import { Route, Routes } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
 
-// Admin components
-import AdminLayout from './components/admin/AdminLayout';
-import ProtectedRoute from './components/admin/ProtectedRoute';
-import Dashboard from './pages/admin/Dashboard';
-import LoanApplications from './pages/admin/LoanApplications';
-import LoanDetails from './pages/admin/LoanDetails';
-import Login from './pages/admin/Login';
-import Users from './pages/admin/Users';
+// Lazy load Admin components
+const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
+const ProtectedRoute = lazy(() => import('./components/admin/ProtectedRoute'));
+const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
+const LoanApplications = lazy(() => import('./pages/admin/LoanApplications'));
+const LoanDetails = lazy(() => import('./pages/admin/LoanDetails'));
+const Login = lazy(() => import('./pages/admin/Login'));
+const Users = lazy(() => import('./pages/admin/Users'));
 
-// Public components
-import Layout from './components/layout/Layout';
-import AboutPage from './pages/AboutPage';
-import ApplyPage from './pages/ApplyPage';
-import ContactPage from './pages/ContactPage';
-import EmiCalculatorPage from './pages/EmiCalculatorPage';
-import HomePage from './pages/HomePage';
+// Lazy load Public components
+const Layout = lazy(() => import('./components/layout/Layout'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
+const ApplyPage = lazy(() => import('./pages/ApplyPage'));
+const ContactPage = lazy(() => import('./pages/ContactPage'));
+const EmiCalculatorPage = lazy(() => import('./pages/EmiCalculatorPage'));
+const HomePage = lazy(() => import('./pages/HomePage'));
 
 const App = () => {
   return (
+    <Suspense fallback={<div>Loading...</div>}>
       <Routes>
         {/* Public Site Routes */}
         <Route path="/" element={<Layout />}>
@@ -42,6 +44,7 @@ const App = () => {
           </Route>
         </Route>
       </Routes>
+    </Suspense>
   );
 };
 

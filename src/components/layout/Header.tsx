@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { IndianRupee, Menu, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { Menu, X, DollarSign } from 'lucide-react';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -37,9 +37,9 @@ const Header = () => {
       <div className="container-custom mx-auto flex justify-between items-center px-4">
         <Link to="/" className="flex items-center space-x-2">
           <div className="bg-gradient-to-r from-primary-600 to-secondary-600 p-2 rounded-lg">
-            <DollarSign size={28} className="text-white" />
+            <IndianRupee size={28} className="text-white" />
           </div>
-          <span className="text-2xl font-bold gradient-text">FinanceFlo</span>
+          <span className="text-2xl font-bold gradient-text">Aditya Birla Capital</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -61,7 +61,7 @@ const Header = () => {
           onClick={toggleMenu}
           aria-label="Toggle menu"
         >
-          {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+          {isMenuOpen ? <X className='text-primary-500' size={28} /> : <Menu className='text-primary-500' size={28} />}
         </button>
       </div>
 

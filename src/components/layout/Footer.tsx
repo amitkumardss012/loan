@@ -54,6 +54,7 @@ const Footer = () => {
               <li><Link to="/emi-calculator" className="text-gray-400 hover:text-primary-500 transition-colors">EMI Calculator</Link></li>
               <li><Link to="/apply" className="text-gray-400 hover:text-primary-500 transition-colors">Apply for Loan</Link></li>
               <li><Link to="/contact" className="text-gray-400 hover:text-primary-500 transition-colors">Contact Us</Link></li>
+              <li><Link to="/admin/login" className="text-gray-400 hover:text-primary-500 transition-colors">Admin Login</Link></li>
             </ul>
           </div>
           
@@ -63,15 +64,15 @@ const Footer = () => {
             <ul className="space-y-4">
               <li className="flex items-start space-x-3">
                 <MapPin size={20} className="text-primary-500 mt-1 flex-shrink-0" />
-                <span className="text-gray-400">123 Finance Street, Silicon Valley, CA 94025</span>
+                <span className="text-gray-400">3V9C + G39, G Block BKC, Bandra Kurla Complex, Bandra East, Mumbai, Maharashtra 400071</span>
               </li>
               <li className="flex items-center space-x-3">
                 <Phone size={20} className="text-primary-500 flex-shrink-0" />
-                <span className="text-gray-400">+1 (555) 123-4567</span>
+                <span className="text-gray-400">8923049769</span>
               </li>
               <li className="flex items-center space-x-3">
                 <Mail size={20} className="text-primary-500 flex-shrink-0" />
-                <span className="text-gray-400">support@financeflo.com</span>
+                <span className="text-gray-400">adityabirla@capitalpvt.com</span>
               </li>
             </ul>
           </div>

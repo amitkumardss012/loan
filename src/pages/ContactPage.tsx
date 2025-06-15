@@ -83,7 +83,7 @@ const ContactPage = () => {
                 Our support team is available Monday through Friday, 9am to 6pm ET.
               </p>
               <a href="tel:+15551234567" className="text-lg sm:text-xl font-semibold text-primary-600">
-                +1 (555) 123-4567
+                8923049769
               </a>
             </motion.div>
             
@@ -102,7 +102,7 @@ const ContactPage = () => {
                 Send us an email and we'll get back to you within 24 hours.
               </p>
               <a href="mailto:support@financeflo.com" className="text-lg sm:text-xl font-semibold text-primary-600">
-                support@financeflo.com
+                adityabirla@capitalpvt.com
               </a>
             </motion.div>
             
@@ -121,7 +121,7 @@ const ContactPage = () => {
                 Visit our headquarters in the heart of Silicon Valley.
               </p>
               <p className="text-lg sm:text-xl font-semibold text-primary-600">
-                123 Finance Street, CA 94025
+                3V9C + G39, G Block BKC, Bandra Kurla Complex, Bandra East, Mumbai, Maharashtra 400071
               </p>
             </motion.div>
           </div>
@@ -277,7 +277,7 @@ const ContactPage = () => {
       </section>
       
       {/* Map Section */}
-      <section className="h-[400px] sm:h-[500px] relative overflow-hidden">
+      {/* <section className="h-[400px] sm:h-[500px] relative overflow-hidden">
         <iframe 
           src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d50759.211850419126!2d-122.12464255325876!3d37.4040685038562!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x808fa4808590af4d%3A0x8f4d49f24e649074!2sPalo%20Alto%2C%20CA!5e0!3m2!1sen!2sus!4v1634785466883!5m2!1sen!2sus"
           width="100%"
@@ -288,7 +288,7 @@ const ContactPage = () => {
           title="FinanceFlo Office Location"
         ></iframe>
       </section>
-      
+       */}
       {/* FAQ Section */}
       <section className="py-12 sm:py-20 bg-gray-50">
         <div className="container-custom mx-auto px-4 sm:px-6">
@@ -357,7 +357,7 @@ const ContactPage = () => {
             <p className="text-base sm:text-lg text-gray-700 mb-4 sm:mb-6">
               Don't see your question here? Contact our support team for assistance.
             </p>
-            <a href="mailto:support@financeflo.com" className="btn btn-primary text-sm sm:text-base">
+            <a href="adityabirla@capitalpvt.com" className="btn btn-primary text-sm sm:text-base">
               Email Support
             </a>
           </div>
